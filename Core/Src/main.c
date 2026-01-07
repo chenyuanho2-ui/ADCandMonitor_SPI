@@ -25,7 +25,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "Monitor_SPI.h"
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -35,6 +36,12 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define LED0_PIN GPIO_PIN_13
+#define LED0_GPIO_PORT GPIOC
+#define LED0_ON  HAL_GPIO_WritePin(LED0_GPIO_PORT, LED0_PIN, GPIO_PIN_RESET)  // 假设低电平亮（根据硬件确定）
+#define LED0_OFF HAL_GPIO_WritePin(LED0_GPIO_PORT, LED0_PIN, GPIO_PIN_SET)    // 高电平灭
+#define LED0_TOGGLE HAL_GPIO_TogglePin(LED0_GPIO_PORT, LED0_PIN)  // 翻转状态
+
 
 /* USER CODE END PD */
 
@@ -93,7 +100,12 @@ int main(void)
   MX_USART1_UART_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
-
+	LED0_OFF;
+// 初始化监听模块，选择你的芯片 (例如 MAX31855)
+  Monitor_Init(CHIP_MAX31855); 
+  
+  // 建议：ADC 需要校准一次(可选)
+  HAL_ADCEx_Calibration_Start(&hadc1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -103,6 +115,9 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	LED0_ON;
+	Monitor_LoopHandler();
+	 
   }
   /* USER CODE END 3 */
 }
